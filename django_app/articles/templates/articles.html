@@ -5,13 +5,10 @@
     </head>
 <body>
 
-<h1>Hello World!</h1>
-<p>Welcome to my first Django project!</p>
-
 <ul>
     {% for obj in res %}
       <li>
-        {{ obj.title }}
+        <a href="{{ obj.doi }}">{{ obj.title }}</a>
       </li>
     {% endfor %}
   </ul>

@@ -7,18 +7,18 @@
 <body>
 
 <h1>Hello World!</h1>
-<p>Welcome to my first Django project!</p>
-
-<form action="/articles" method="get">
-    winput
-
-</form>
 
 <form action="/articles/">
     <label for="title">Title:</label><br>
     <input type="text" name="title" id="fname" value="John"><br><br>
     <input type="submit" value="Submit">
   </form>
+
+  {% for subtheme in subthemes %}
+  <li>
+    <a href="articles/?subtheme={{subtheme.id}}">{{ subtheme.subtheme }}</a>
+  </li>
+    {% endfor %}
 
 </body>
 </html>
