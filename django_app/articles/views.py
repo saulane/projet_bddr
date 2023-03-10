@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
-from .models import Article,Subtheme,Theme
+from .models import Article,Subtheme,Theme, Author, Article_author
 
 def articles(request):
     title = request.GET.get('title')
@@ -19,7 +19,11 @@ def articles(request):
 
 def article(request, doi):
     template = loader.get_template('article.html')
-    context = {"res": Article.objects.get(doi=doi)}
+    obj = Article.objects.get(doi=doi)
+    authors_article = Article_author.objects.filter(article_id=obj).values_list("author_id", flat=True)
+    authors = Author.objects.filter(pk__in=authors_article)
+    context = {"res": obj,"authors":authors}
+    
     return HttpResponse(template.render(context))
 
 def home(request):

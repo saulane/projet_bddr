@@ -9,6 +9,11 @@
     {{res.title}}
 </h1>
 
+{% for author in authors %}
+<h2 style="display:inline;margin-right:30px">{{author.first_name}} {{author.last_name}}</h2>
+{% endfor %}
+
+
 <p>{{res.abstract}}</p>
 </body>
 </html>
