@@ -20,14 +20,16 @@ for d in dir_list:
             reader = csv.DictReader(f_in)
             for row in reader:
                 study = row["Study"]
+                theme = d[2:].split("/")[-1]
+                study_type = row["Study Type"] if "Study Type" in row else None
                 if len(dict_name_theme) > 0 and dict_name_theme[-1]["Study"] != study:
-                    dict_name_theme.append({ 'Study': study, 'Theme':  f.rstrip("csv")})
+                    dict_name_theme.append({ 'Study': study,'Theme': theme,'Subtheme':  f.rstrip("csv"),"StudyType": study_type})
                 elif len(dict_name_theme) == 0:
-                    dict_name_theme.append({ 'Study': study, 'Theme':  f.rstrip("csv")})
+                    dict_name_theme.append({ 'Study': study, 'Theme': theme,'Subtheme':  f.rstrip("csv"),"StudyType": study_type})
 
 print(len(dict_name_theme))
 
 with open("test.csv", 'w', encoding="utf8",newline='') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=["Study", "Theme"], delimiter=";")
+    writer = csv.DictWriter(csvfile, fieldnames=["Study", "Theme", "Subtheme","StudyType"], delimiter=";")
     writer.writeheader()
     writer.writerows(dict_name_theme)

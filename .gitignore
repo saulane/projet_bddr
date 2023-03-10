@@ -1,1 +1,4 @@
 .venv
+config.ini
+django_app/articles/migrations
+__pycache__

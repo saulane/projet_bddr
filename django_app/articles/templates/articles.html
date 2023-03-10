@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+<body>
+
+<h1>Hello World!</h1>
+<p>Welcome to my first Django project!</p>
+
+<ul>
+    {% for obj in res %}
+      <li>
+        {{ obj.title }}
+      </li>
+    {% endfor %}
+  </ul>
+
+</body>
+</html>
