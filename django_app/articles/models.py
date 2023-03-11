@@ -3,26 +3,26 @@ from django.db import models
 # Create your models here.
 
 class Theme(models.Model):
-    theme = models.CharField(max_length=500, unique=True)
+    theme = models.CharField(max_length=400, unique=True)
 
 class Subtheme(models.Model):
     theme_id = models.ForeignKey(Theme, on_delete=models.CASCADE,null=True)
     subtheme = models.CharField(max_length=500, unique=True)
 
 class Journal(models.Model):
-    journal_name = models.CharField(max_length=200, unique=True)
+    journal_name = models.CharField(max_length=500, unique=True)
 
 class Study_type(models.Model):
-    type = models.CharField(max_length=100,unique=True)
+    type = models.CharField(max_length=500,unique=True)
 
 class Article(models.Model):
     date = models.DateField()
-    title = models.CharField(max_length=500)
+    title = models.TextField()
     type_id = models.ForeignKey(Study_type, on_delete=models.CASCADE,null=True)
     journal_id = models.ForeignKey(Journal, on_delete=models.CASCADE)
     subtheme_id = models.ForeignKey(Subtheme, on_delete=models.CASCADE,null=True)
     abstract = models.TextField(null=True)
-    doi = models.CharField(max_length=300, unique=True)
+    doi = models.CharField(max_length=500, unique=True)
     url = models.URLField()
 
 class Laboratory(models.Model):

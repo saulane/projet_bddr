@@ -31,10 +31,6 @@ with open(f"{DATA_DIR}metadata.csv", "r", encoding="utf8") as f_in:
         cord_uid = row['cord_uid']
         title = row['title']
         abstract = row['abstract']
-        
-        if title not in dict_study:
-            continue
-
         # authors = row['authors'].split('; ')
         doi = row['doi']
         journal = row['journal']
@@ -109,8 +105,11 @@ with open(f"{DATA_DIR}metadata.csv", "r", encoding="utf8") as f_in:
             except:
                 new_author.save()
 
-            article_author = Article_author(article_id=article,author_id=new_author)
-            article_author.save()
+            try:
+                Article_author.objects.get(article_id=article,author_id=new_author)
+            except:
+                article_author = Article_author(article_id=article,author_id=new_author)
+                article_author.save()
             
 
                                 

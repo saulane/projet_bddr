@@ -1,24 +1,277 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    </head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js">
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+ 
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
+    </script>
+    <script src="{% static 'js/particles.min.js' %}"></script>
+ 
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="flex flex-col items-center my-8">
+    <h1 class="text-5xl">Recherche Article COVID</h1>
+    <form action="/articles/">
+      <input type="text" id="search" name="title" id="fname" class="search-bar" placeholder="Titre de l'article"  />
+      <input type="submit" id="search-button" class="search-button" value=">"/>
+    </form>
 
-<h1>Recherche Article COVID</h1>
+     <!-- particles.js container -->
+     <div id="particles-js"></div>
 
-<form action="/articles/">
-    <label for="title">Titre:</label><br>
-    <input type="text" name="title" id="fname" value="Clinical"><br><br>
-    <input type="submit" value="Submit">
-  </form>
 
-  {% for subtheme in subthemes %}
-  <li>
-    <a href="articles/?subtheme={{subtheme.id}}">{{ subtheme.subtheme }}</a>
-  </li>
-    {% endfor %}
+    <script>
+      $( function() {
+        var availableTags = [
+            {% for subtheme in subthemes %}
+                "{{subtheme.subtheme}}",
+            {% endfor %}
+        ];
+        $( "#search" ).autocomplete({
+          source: availableTags
+        });
+      } );
 
-</body>
+
+      particlesJS("particles-js", {
+        "particles": {
+          "number": {
+            "value": 100,
+            "density": {
+              "enable": true,
+              "value_area": 800
+            }
+          },
+          "color": {
+            "value": "#606060"
+          },
+          "shape": {
+            "type": "circle",
+            "stroke": {
+              "width": 0,
+              "color": "#606060"
+            },
+            "polygon": {
+              "nb_sides": 5
+            },
+            "image": {
+              "src": "img/github.svg",
+              "width": 100,
+              "height": 100
+            }
+          },
+          "opacity": {
+            "value": 0.3,
+            "random": true,
+            "anim": {
+              "enable": false,
+              "speed": 1,
+              "opacity_min": 0.1,
+              "sync": false
+            }
+          },
+          "size": {
+            "value": 3,
+            "random": true,
+            "anim": {
+              "enable": false,
+              "speed": 40,
+              "size_min": 0.1,
+              "sync": false
+            }
+          },
+          "line_linked": {
+            "enable": true,
+            "distance": 150,
+            "color": "#606060",
+            "opacity": 0.2,
+            "width": 1
+          },
+          "move": {
+            "enable": true,
+            "speed": 1,
+            "direction": "none",
+            "random": false,
+            "straight": false,
+            "out_mode": "out",
+            "bounce": false,
+            "attract": {
+              "enable": false,
+              "rotateX": 600,
+              "rotateY": 1200
+            }
+          }
+        },
+        "interactivity": {
+          "detect_on": "canvas",
+          "events": {
+            "onhover": {
+              "enable": true,
+              "mode": "grab"
+            },
+            "onclick": {
+              "enable": true,
+              "mode": "push"
+            },
+            "resize": true
+          },
+          "modes": {
+            "grab": {
+              "distance": 140,
+              "line_linked": {
+                "opacity": 1
+              }
+            },
+            "bubble": {
+              "distance": 400,
+              "size": 40,
+              "duration": 2,
+              "opacity": 8,
+              "speed": 3
+            },
+            "repulse": {
+              "distance": 200,
+              "duration": 0.4
+            },
+            "push": {
+              "particles_nb": 4
+            },
+            "remove": {
+              "particles_nb": 2
+            }
+          }
+        },
+        "retina_detect": true
+      });
+    </script>
+   
+
+    {% comment %} {% for subtheme in subthemes %}
+    <li>
+      <a href="articles/?subtheme={{subtheme.id}}">{{ subtheme.subtheme }}</a>
+    </li>
+    {% endfor %} {% endcomment %}
+
+    <div style="margin-top:10em">
+      <button onclick="update('year')">Par Année</button>
+      <button onclick="update('month')">Par mois</button>
+      <button onclick="update('week')">Par semaines</button>
+      <script src="http://d3js.org/d3.v4.js"></script>
+    </div>
+    <div id="my_dataviz"></div>
+
+    <script>
+      var parseDate = d3.timeParse("%Y-%m-%d"); // for dates like "2014-01-01"
+      //var parseDate = d3.time.format("%Y-%m-%dT00:00:00Z").parse;  // for dates like "2014-01-01T00:00:00Z"
+
+      // set the dimensions and margins of the graph
+      var margin = {top: 30, right: 30, bottom: 70, left: 60},
+          width = 700 - margin.left - margin.right,
+          height = 600 - margin.top - margin.bottom;
+
+      // append the svg object to the body of the page
+      var svg = d3.select("#my_dataviz")
+        .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+      
+      /*d3.json('/api/play_count_by_month', function(error, data) {
+        data.forEach(function(d) {
+          d.month = parseDate(d.month);
+          d.count_items = +d.count_items;
+        });*/
+        
+       // Initialize the X axis
+      var x = d3.scaleBand()
+      .range([ 0, width ])
+      .padding(0.2);
+      var xAxis = svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+
+
+      // Initialize the Y axis
+      var y = d3.scaleLinear()
+      .range([ height, 0]);
+      var yAxis = svg.append("g")
+      .attr("class", "myYaxis")
+            
+      // A function that create / update the plot for a given variable:
+      function update(scale) {
+        
+        d3.json('/api/play_count_by_' + scale, function(error, data) {
+          svg.selectAll("rect").remove()
+          data.forEach(function(d) {
+            if (scale=="month"){
+              d.month = parseDate(d.month);
+            }else if (scale=="year"){
+              d.month = parseDate(d.year);
+            }else if (scale=="week"){
+              d.month = parseDate(d.week);
+            }
+            d.count_items = +d.count_items;
+          });
+
+            // Update the X axis
+          x.domain(data.map(function(d) { 
+            var x_axis_text;
+            if (scale=="month"){
+              x_axis_text = (d.month.getFullYear() + "-" + d.month.getMonth());
+            }else if (scale=="year"){
+              x_axis_text = (d.month.getFullYear());
+            }else if (scale=="week"){
+              x_axis_text = (d.month.getFullYear() + "-" + d.month.getMonth()+ "-" + d.month.getDate());
+            }
+            return x_axis_text; 
+          }))
+
+          xAxis.call(d3.axisBottom(x))      
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-45)")
+            .style("text-anchor", "end");
+
+          // Update the Y axis
+          y.domain([0, d3.max(data, function(d) { return d.count_items }) ]);
+          yAxis.transition().duration(1000).call(d3.axisLeft(y));
+          
+
+
+          var u = svg.selectAll("rect").data(data)
+
+  
+          u.enter()
+            .append("rect")
+            .merge(u)
+              .attr("x", function(d) { 
+                var x_axis_text;
+                if (scale=="month"){
+                  x_axis_text = (d.month.getFullYear() + "-" + d.month.getMonth());
+                }else if (scale=="year"){
+                  x_axis_text = (d.month.getFullYear());
+                }else if (scale=="week"){
+                  x_axis_text = (d.month.getFullYear() + "-" + d.month.getMonth()+ "-" + d.month.getDate());
+                }
+                return x(x_axis_text); 
+              })
+              .attr("y", function(d) { return y(d.count_items); })
+              .attr("width", x.bandwidth())
+              .attr("height", function(d) { return height - y(d.count_items); })
+              .attr("fill", "#69b3a2")
+          })
+        }
+
+      update("year");
+
+    </script>
+
+  </div>
+  </body>
 </html>

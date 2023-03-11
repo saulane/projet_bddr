@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from django.contrib.postgres.operations import UnaccentExtension
+from django.contrib.postgres.operations import UnaccentExtension, TrigramExtension
 import os
 import configparser
 
@@ -32,7 +32,7 @@ SECRET_KEY = "django-insecure--=4*oil$(*t(0ww)#i7#g9s5xcq*j7ibs+^1d1if=p3ct^&w!o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [".simon-rave.com"]
+ALLOWED_HOSTS = [".simon-rave.com", "127.0.0.1", "localhost"]
 
 
 # Application definition

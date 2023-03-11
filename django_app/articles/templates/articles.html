@@ -2,16 +2,25 @@
 <!DOCTYPE html>
 <html>
     <head>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+      <link rel="stylesheet" href="{% static 'css/articles.css' %}" />
+      <script src="https://cdn.tailwindcss.com"></script>
     </head>
 <body>
 
-<ul>
-    {% for obj in res %}
-      <li>
-        <a href="{{ obj.doi }}">{{ obj.title }}</a>
-      </li>
-    {% endfor %}
-  </ul>
+
+  <div class="flex flex-col items-center my-8">
+      <form action="/articles/" class="w-2/3">
+        <input type="text" id="search" name="title" class="p-2 text-4xl w-full border-solid border-2 outline-0" id="fname" placeholder="Titre de l'article" value="{{title}}" />
+      </form>  
+
+      {% for obj in res %}
+        <div class="rounded-md shadow-md my-4 w-2/3 p-4 max-h-56">
+          <a href="{{ obj.doi }}" class="text-lg font-semibold">{{ obj.title }}</a>
+          <p class="truncate text-sm">{{ obj.abstract }}</p>
+        </div>
+      {% endfor %}
+  </div>
 
 </body>
 </html>
