@@ -33,12 +33,8 @@ class Article(models.Model):
     title = models.TextField()
     type_id = models.ForeignKey(Study_type, on_delete=models.CASCADE,null=True)
     journal_id = models.ForeignKey(Journal, on_delete=models.CASCADE)
-    subtheme_id = models.ForeignKey(Subtheme, on_delete=models.CASCADE,null=True)
+    subthemes = models.ManyToManyField(Subtheme)
     abstract = models.TextField(null=True)
     doi = models.CharField(max_length=500, unique=True)
     authors = models.ManyToManyField(Author)
-    url = models.URLField()
-
-class Article_author(models.Model):
-    article_id = models.ForeignKey(Article, on_delete=models.CASCADE,null=True)
-    author_id = models.ForeignKey(Author, on_delete=models.CASCADE,null=True)
+    url = models.URLField(max_length=500)

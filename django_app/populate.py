@@ -18,18 +18,19 @@ dict_study = {}
 with open("test.csv", "r", encoding="utf8") as f_in:
     reader = csv.DictReader(f_in, delimiter=";")
     for row in reader:
-        dict_study[row["Study"]] = [row["Theme"], row["Subtheme"], row["StudyType"]]
+        dict_study[str(row["Study"]).strip(".").casefold()] = [row["Theme"], row["Subtheme"], row["StudyType"], row["Date"]]
 
 # open the file
 with open(f"{DATA_DIR}metadata.csv", "r", encoding="utf8") as f_in:
     reader = csv.DictReader(f_in)
     i = 0
     for i,row in tqdm(enumerate(reader)):
-        # if i == 5:
-        #     break
-        # access some metadata
         cord_uid = row['cord_uid']
         title = row['title']
+
+        if title.strip(".").casefold() not in list(dict_study):
+            continue
+
         abstract = row['abstract']
         # authors = row['authors'].split('; ')
         doi = row['doi']
@@ -74,8 +75,6 @@ with open(f"{DATA_DIR}metadata.csv", "r", encoding="utf8") as f_in:
         authors_object = []
         for author in authors_full:
 
-            
-
             new_author = Author(first_name=author["first"],
                                 last_name=author["last"],
                                 email=author["email"])
@@ -105,29 +104,22 @@ with open(f"{DATA_DIR}metadata.csv", "r", encoding="utf8") as f_in:
             except:
                 new_author.save()
 
-            try:
-                Article_author.objects.get(article_id=article,author_id=new_author)
-            except:
-                article_author = Article_author(article_id=article,author_id=new_author)
-                article_author.save()
-            
+            article.authors.add(new_author)
 
-                                
+        article.save()
 
-
-
-        if title in dict_study:
+        if title.strip(".").casefold() in dict_study:
             i+=1
 
-            theme = dict_study[title][0]
-            subtheme = dict_study[title][1]
-            studytype = dict_study[title][2]
+            theme = dict_study[title.strip(".").casefold()][0]
+            subtheme = dict_study[title.strip(".").casefold()][1]
+            studytype = dict_study[title.strip(".").casefold()][2]
 
             theme_obj = Theme(theme=theme)
             try:
                 theme_obj.save()
             except IntegrityError:
-                theme_obj = Theme.objects.get(theme=theme)            
+                theme_obj = Theme.objects.get(theme=theme)
 
             subtheme_obj = Subtheme(subtheme=subtheme,theme_id=theme_obj)
             try:
@@ -143,5 +135,5 @@ with open(f"{DATA_DIR}metadata.csv", "r", encoding="utf8") as f_in:
                 article_study_type = Study_type.objects.get(type=studytype)
             
             article.type_id = article_study_type
-            article.subtheme_id = subtheme_obj
+            article.subthemes.add(subtheme_obj)
             article.save()
