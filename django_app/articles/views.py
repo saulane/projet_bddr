@@ -1,26 +1,35 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.template import loader
-from .models import Article,Subtheme,Theme, Author, Article_author
+from .models import Article,Subtheme,Theme, Author, Article_author, Laboratory
 from django.db.models.functions import TruncMonth,TruncYear, TruncWeek
 from django.db.models import Count
 
 
 def articles(request):
     title = request.GET.get('title')
-    subtheme = request.GET.get('subtheme')
+    subtheme = request.GET.getlist('subtheme[]')
     date = request.GET.get('date')
+    labo = request.GET.get('labo')
+
     q = Article.objects
-    if title:
+    if len(title) > 0:
         q = q.filter(title__unaccent__icontains=title)
 
     if subtheme:
-        q = q.filter(subtheme_id=subtheme)
+        q = q.filter(subtheme_id__in=subtheme)
 
     if date:
         date = date.split("-")
         q = q.filter(date__year=date[0])
     context = {"res": q,"title":title}
+
+    if labo:
+        filter_labo = Laboratory.objects.filter(labo_name__unaccent__icontains=labo)
+
+        authors_id = Author.objects.filter(labo_id__in=filter_labo)
+        articles_id = Article_author.objects.filter(author_id__in=authors_id)[:20]
+        q = q.filter(pk__in=articles_id)
 
     template = loader.get_template('articles.html')
     return HttpResponse(template.render(context))
@@ -35,7 +44,9 @@ def article(request, doi):
     return HttpResponse(template.render(context))
 
 def home(request):
-    context = {"subthemes": Subtheme.objects.all()}
+    context = {"subthemes": Subtheme.objects.all(),
+               "labos": Laboratory.objects.all(),
+               "themes": Theme.objects.all()}
 
     template = loader.get_template('index.html')
     return HttpResponse(template.render(context))
